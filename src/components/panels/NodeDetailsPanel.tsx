@@ -196,17 +196,29 @@ function TaskForm({ data, patch }: { data: TaskNodeData; patch: (p: Partial<Task
 // ---- Approval Form ----
 function ApprovalForm({ data, patch }: { data: ApprovalNodeData; patch: (p: Partial<ApprovalNodeData>) => void }) {
   const ROLES = ['Manager', 'HRBP', 'Director', 'VP', 'C-Suite'];
+
   return (
     <>
       <Field label="Title" required>
-        <input className={inputClass} value={data.title} onChange={e => patch({ title: e.target.value })} placeholder="e.g. Manager Approval" />
+        <input
+          className={inputClass}
+          value={data.title}
+          onChange={e => patch({ title: e.target.value })}
+          placeholder="e.g. Manager Approval"
+        />
       </Field>
+
       <Field label="Approver Role">
-        <select className={inputClass} value={data.approverRole} onChange={e => patch({ approverRole: e.target.value })}>
+        <select
+          className={inputClass}
+          value={data.approverRole}
+          onChange={e => patch({ approverRole: e.target.value })}
+        >
           {ROLES.map(r => <option key={r} value={r}>{r}</option>)}
           <option value="">Custom...</option>
         </select>
       </Field>
+
       <Field label="Auto-approve Threshold (hours)">
         <input
           className={inputClass}
@@ -216,8 +228,31 @@ function ApprovalForm({ data, patch }: { data: ApprovalNodeData; patch: (p: Part
           onChange={e => patch({ autoApproveThreshold: Number(e.target.value) })}
           placeholder="0 = disabled"
         />
-        <p className="text-xs text-gray-400 mt-0.5">Automatically approve if pending for fewer hours than this value. 0 = disabled.</p>
+        <p className="text-xs text-gray-400 mt-0.5">
+          Automatically approve if pending for fewer hours than this value. 0 = disabled.
+        </p>
       </Field>
+
+      {/* 🔥 NEW: Branching Control */}
+      <Field label="Decision Mode">
+        <select
+          className={inputClass}
+          value={data.decisionMode ?? 'single'}
+          onChange={(e) =>
+            patch({ decisionMode: e.target.value as 'single' | 'approved_rejected' })
+          }
+        >
+          <option value="single">Single Path</option>
+          <option value="approved_rejected">Approved / Rejected (Branching)</option>
+        </select>
+      </Field>
+
+      {/* 🔥 UI hint */}
+      {data.decisionMode === 'approved_rejected' && (
+        <p className="text-xs text-blue-500">
+          This node will create two paths: Approved and Rejected
+        </p>
+      )}
     </>
   );
 }

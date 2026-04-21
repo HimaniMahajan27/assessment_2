@@ -96,18 +96,6 @@ function WorkflowApp() {
     setIsSimulating(false);
   }, [nodes, edges]);
 
-  const handleExport = useCallback(() => {
-    const workflow = serializeWorkflow(nodes as WorkflowNode[], edges);
-    const json = JSON.stringify(workflow, null, 2);
-    const blob = new Blob([json], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'hr-workflow.json';
-    a.click();
-    URL.revokeObjectURL(url);
-  }, [nodes, edges]);
-
   const workflowDisplayJSON = workflowToDisplayJSON(
     serializeWorkflow(nodes as WorkflowNode[], edges)
   );
@@ -117,7 +105,6 @@ function WorkflowApp() {
       <Header
         onValidate={handleValidate}
         onTest={handleTest}
-        onExport={handleExport}
         isTesting={isSimulating}
       />
 

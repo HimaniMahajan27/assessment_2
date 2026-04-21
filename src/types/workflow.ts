@@ -23,11 +23,20 @@ export interface TaskNodeData {
   customFields: KVPair[];
 }
 
+/**
+ * 🔥 UPDATED: Approval now supports branching
+ */
 export interface ApprovalNodeData {
   kind: 'approval';
   title: string;
   approverRole: string;
   autoApproveThreshold: number;
+
+  /**
+   * 'single' → normal linear flow
+   * 'approved_rejected' → branching flow
+   */
+  decisionMode?: 'single' | 'approved_rejected';
 }
 
 export interface AutomatedNodeData {
@@ -53,12 +62,18 @@ export type WorkflowNodeData =
 export type WorkflowNode = Node<WorkflowNodeData>;
 export type WorkflowEdge = Edge;
 
+/**
+ * Automation actions
+ */
 export interface AutomationAction {
   id: string;
   label: string;
   params: string[];
 }
 
+/**
+ * Simulation
+ */
 export interface SimulationStep {
   nodeId: string;
   nodeKind: NodeKind;
@@ -74,6 +89,9 @@ export interface SimulationResult {
   error?: string;
 }
 
+/**
+ * Validation
+ */
 export interface ValidationCheck {
   label: string;
   passed: boolean;
@@ -86,6 +104,9 @@ export interface ValidationResult {
   checks: ValidationCheck[];
 }
 
+/**
+ * Serialized Workflow
+ */
 export interface WorkflowJSON {
   id: string;
   name: string;

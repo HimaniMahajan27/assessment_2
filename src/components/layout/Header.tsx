@@ -1,20 +1,18 @@
-import { CheckCircle, Play, Download } from 'lucide-react';
+import { CheckCircle, Play } from 'lucide-react';
 
 interface HeaderProps {
   onValidate: () => void;
   onTest: () => void;
-  onExport: () => void;
   isTesting: boolean;
 }
 
-export default function Header({ onValidate, onTest, onExport, isTesting }: HeaderProps) {
+export default function Header({ onValidate, onTest, isTesting }: HeaderProps) {
   return (
     <header className="h-14 bg-white border-b border-gray-200 flex items-center justify-between px-5 flex-shrink-0 z-10 shadow-sm">
       <div className="flex items-center gap-3">
-        <h1 className="text-lg font-bold text-gray-900 tracking-tight">HR Workflow Designer</h1>
-        <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full font-medium">
-          Draft
-        </span>
+        <h1 className="text-lg font-bold text-gray-900 tracking-tight">
+          Workflow Designer
+        </h1>
       </div>
 
       <div className="flex items-center gap-2">
@@ -33,14 +31,6 @@ export default function Header({ onValidate, onTest, onExport, isTesting }: Head
         >
           <Play size={14} className={isTesting ? 'animate-pulse' : ''} />
           {isTesting ? 'Running...' : 'Test Workflow'}
-        </button>
-
-        <button
-          onClick={onExport}
-          className="flex items-center gap-1.5 px-3.5 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-colors"
-        >
-          <Download size={15} />
-          Export JSON
         </button>
       </div>
     </header>

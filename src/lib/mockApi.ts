@@ -9,8 +9,6 @@ import type {
 const AUTOMATIONS: AutomationAction[] = [
   { id: 'send_email', label: 'Send Email', params: ['to', 'subject'] },
   { id: 'generate_doc', label: 'Generate Document', params: ['template', 'recipient'] },
-  { id: 'create_account', label: 'Create System Account', params: ['username', 'role'] },
-  { id: 'notify_slack', label: 'Send Slack Notification', params: ['channel', 'message'] },
 ];
 
 export async function getAutomations(): Promise<AutomationAction[]> {
@@ -24,13 +22,13 @@ export async function simulate(workflow: WorkflowJSON): Promise<SimulationResult
   const steps: SimulationStep[] = [];
   const now = new Date();
 
-  // topological-order walk
   const nodeMap = new Map(workflow.nodes.map((n) => [n.id, n]));
-  const edgeMap = new Map<string, string[]>();
-  for (const e of workflow.edges) {
-    const arr = edgeMap.get(e.source) ?? [];
-    arr.push(e.target);
-    edgeMap.set(e.source, arr);
+
+  const outgoingMap = new Map<string, typeof workflow.edges>();
+  for (const edge of workflow.edges) {
+    const arr = outgoingMap.get(edge.source) ?? [];
+    arr.push(edge);
+    outgoingMap.set(edge.source, arr);
   }
 
   const startNode = workflow.nodes.find((n) => n.data.kind === 'start');
@@ -49,7 +47,9 @@ export async function simulate(workflow: WorkflowJSON): Promise<SimulationResult
 
     const node = nodeMap.get(id);
     if (!node) continue;
+
     const { data } = node;
+    const kind = data.kind as NodeKind;
 
     const ts = new Date(now.getTime() + offsetSec * 1000);
     const timestamp = ts.toLocaleTimeString('en-US', {
@@ -57,9 +57,7 @@ export async function simulate(workflow: WorkflowJSON): Promise<SimulationResult
       minute: '2-digit',
       second: '2-digit',
     });
-    offsetSec += Math.floor(Math.random() * 45) + 15;
-
-    const kind = data.kind as NodeKind;
+    offsetSec += 20;
 
     switch (kind) {
       case 'start': {
@@ -67,48 +65,82 @@ export async function simulate(workflow: WorkflowJSON): Promise<SimulationResult
         steps.push({
           nodeId: id,
           nodeKind: kind,
-          label: `Start: ${sd.title}`,
+          label: `Start: ${sd.title || 'Workflow Start'}`,
           status: 'completed',
           timestamp,
         });
         break;
       }
+
       case 'task': {
         const td = data as import('../types/workflow').TaskNodeData;
         steps.push({
           nodeId: id,
           nodeKind: kind,
-          label: `Task: ${td.title}`,
+          label: `Task: ${td.title || 'Task Step'}`,
           status: 'completed',
           timestamp,
           detail: td.assignee ? `Assigned to ${td.assignee}` : undefined,
         });
         break;
       }
+
       case 'approval': {
         const ad = data as import('../types/workflow').ApprovalNodeData;
+
+        const isBranching = ad.decisionMode === 'approved_rejected';
+        const outgoing = outgoingMap.get(id) ?? [];
+
+        if (isBranching) {
+          const decision = Math.random() > 0.5 ? 'approved' : 'rejected';
+
+          steps.push({
+            nodeId: id,
+            nodeKind: kind,
+            label: `Approval: ${ad.title || 'Approval Step'}`,
+            status: decision === 'approved' ? 'approved' : 'error',
+            timestamp,
+            detail:
+              decision === 'approved'
+                ? `Approved by ${ad.approverRole || 'Approver'}`
+                : `Rejected by ${ad.approverRole || 'Approver'}`,
+          });
+
+          const chosenEdges = outgoing.filter((e) => e.sourceHandle === decision);
+          for (const edge of chosenEdges) {
+            if (!visited.has(edge.target)) queue.push(edge.target);
+          }
+
+          continue;
+        }
+
         steps.push({
           nodeId: id,
           nodeKind: kind,
-          label: `Approval: ${ad.title}`,
+          label: `Approval: ${ad.title || 'Approval Step'}`,
           status: 'approved',
           timestamp,
-          detail: `Approved by ${ad.approverRole}`,
+          detail: ad.approverRole ? `Approved by ${ad.approverRole}` : undefined,
         });
+
         break;
       }
+
       case 'automated': {
         const aud = data as import('../types/workflow').AutomatedNodeData;
         const action = AUTOMATIONS.find((a) => a.id === aud.actionId);
+
         steps.push({
           nodeId: id,
           nodeKind: kind,
-          label: `Automated: ${aud.title || action?.label || aud.actionId}`,
+          label: `Automated: ${aud.title || action?.label || 'Automated Step'}`,
           status: 'success',
           timestamp,
+          detail: action ? `Executed action: ${action.label}` : undefined,
         });
         break;
       }
+
       case 'end': {
         const ed = data as import('../types/workflow').EndNodeData;
         steps.push({
@@ -122,9 +154,9 @@ export async function simulate(workflow: WorkflowJSON): Promise<SimulationResult
       }
     }
 
-    const nexts = edgeMap.get(id) ?? [];
-    for (const nxt of nexts) {
-      if (!visited.has(nxt)) queue.push(nxt);
+    const nexts = outgoingMap.get(id) ?? [];
+    for (const edge of nexts) {
+      if (!visited.has(edge.target)) queue.push(edge.target);
     }
   }
 
@@ -132,5 +164,5 @@ export async function simulate(workflow: WorkflowJSON): Promise<SimulationResult
 }
 
 function delay(ms: number) {
-  return new Promise((r) => setTimeout(r, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }

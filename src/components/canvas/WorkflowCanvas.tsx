@@ -128,6 +128,7 @@ export default function WorkflowCanvas({
         fitViewOptions={{ padding: 0.2 }}
         deleteKeyCode={['Delete', 'Backspace']}
         className="bg-slate-50"
+        proOptions={{ hideAttribution: true }}
       >
         <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="#d1d5db" />
         <Controls className="!shadow-md" />
