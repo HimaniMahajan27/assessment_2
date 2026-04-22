@@ -129,7 +129,7 @@ A **visual workflow builder** where you can:
 </div>
 
 ```
-  ╭─────────────────────────────────────────────╮
+  ╭──────────────────────────────────────────────╮
   │         Frontend (React + TypeScript)        │
   ├──────────────┬──────────────┬────────────────┤
   │   Canvas     │   Panels     │  Core Logic    │
@@ -139,6 +139,14 @@ A **visual workflow builder** where you can:
   ├──────────────┴──────────────┴────────────────┤
   │              Mock API Layer                  │
   │         Automations + Execution              │
+  ╰──────────────────────────────────────────────╯
+
+   ─────────────────────────────────────────────<img width="1907" height="629" alt="Screenshot 2026-04-22 115415" src="https://github.com/user-attachments/assets/808f3167-7dc0-47a3-80e0-b0923cc093c2" />
+<img width="1907" height="629" alt="Screenshot 2026-04-22 115415" src="https://github.com/user-attachments/assets/1d512abc-1cbc-41c4-844b-421dcd0ea690" />
+
+  │            State Management Layer           │
+  │  Centralized state using React Hooks        │
+  │  for nodes & edges with real-time sync      │
   ╰─────────────────────────────────────────────╯
 ```
 
