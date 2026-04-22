@@ -1,5 +1,3 @@
-<div align="center">
-
 <img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=0:0f0c29,50:302b63,100:24243e&height=200&section=header&text=HR%20Workflow%20Designer&fontSize=52&fontColor=ffffff&fontAlignY=38&desc=Build%20%E2%80%A2%20Validate%20%E2%80%A2%20Simulate%20Workflows&descAlignY=58&descSize=18&animation=fadeIn"/>
 
 <br/>
@@ -141,14 +139,13 @@ A **visual workflow builder** where you can:
   │         Automations + Execution              │
   ╰──────────────────────────────────────────────╯
 
-   ─────────────────────────────────────────────<img width="1907" height="629" alt="Screenshot 2026-04-22 115415" src="https://github.com/user-attachments/assets/808f3167-7dc0-47a3-80e0-b0923cc093c2" />
-<img width="1907" height="629" alt="Screenshot 2026-04-22 115415" src="https://github.com/user-attachments/assets/1d512abc-1cbc-41c4-844b-421dcd0ea690" />
-
+   ─────────────────────────────────────────────
   │            State Management Layer           │
   │  Centralized state using React Hooks        │
   │  for nodes & edges with real-time sync      │
   ╰─────────────────────────────────────────────╯
 ```
+
 
 ---
 
@@ -244,6 +241,10 @@ npm run dev
                          ↓
   [4] Complete process ←──┘
 ```
+<div align="center">
+  <img width="1897" height="915" alt="Screenshot 2026-04-22 120436" src="https://github.com/user-attachments/assets/ed7f7809-d6b8-4e33-9aa8-801df2b331dc" />
+
+</div>
 
 ---
 
